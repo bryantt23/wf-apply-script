@@ -7,9 +7,12 @@
 
     const closeCompany = async () => {
         const closeButton = document.querySelector('[data-test="closeButton"]')
-        await delay(3000)
-        console.log("🚀 ~ closeCompany ~ closeButton:", closeButton)
-        closeButton.click()
+        if (closeButton) {
+            closeButton.click()
+        }
+        else {
+            console.error("Close button not found");
+        }
     }
 
     const start = async () => {
@@ -23,6 +26,7 @@
         const links = element.querySelectorAll("a")
         console.log("🚀 ~ showCompanyJobs ~ links:", links)
         links[0].click()
+        await delay(1000); // Give it 1 second to load the job details
         await closeCompany()
     }
 
