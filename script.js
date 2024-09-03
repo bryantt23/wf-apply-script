@@ -1,4 +1,5 @@
 {
+    let jobLinksElements = [];
     const delay = (time = 500) => {
         return new Promise(resolve => {
             setTimeout(resolve, time)
@@ -39,6 +40,13 @@
         await delay(1000)
         console.log("🚀 ~ applyForJob ~ modal:", modal)
         const links = modal.querySelectorAll('a')
+        console.log("🚀 ~ applyForJob ~ links:", links)
+
+
+        const jobLinks = Array.from(links).filter(link => link.hasAttribute('href') && link.getAttribute("href").startsWith("/jobs"))
+        console.log("🚀 ~ applyForJob ~ jobLinks:", jobLinks)
+        jobLinksElements = jobLinks
+
         // Loop through the <a> tags and print their text content
         for (let i = 0; i < links.length; i++) {
             const linkText = links[i].textContent.trim()
@@ -66,6 +74,7 @@
         }
         // console.log("🚀 ~ applyForJob ~ links:", links)
 
+        debugger
     }
 
     start()
