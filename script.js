@@ -17,14 +17,13 @@
 
     const start = async () => {
         const companies = document.querySelectorAll('[data-test="StartupResult"]');
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 21; i++) {
             await showCompanyJobs(companies[i])
         }
     }
 
     async function showCompanyJobs(element) {
         const links = element.querySelectorAll("a")
-        console.log("🚀 ~ showCompanyJobs ~ links:", links)
         links[0].click()
         await delay(1000); // Give it 1 second to load the job details
         await applyForJob()
@@ -58,23 +57,19 @@
     const clickApplyButton = async (element) => {
         const parentDiv = element.closest('div')
         if (parentDiv) {
-            console.log(`🚀 ~ Parent Div of Link ${element}:`, parentDiv);
-
             // Now find the sibling div that contains the buttons                
             const siblingDiv = parentDiv.nextElementSibling
 
             if (siblingDiv) {
-                console.log("🚀 ~ clickApplyButton ~ siblingDiv:", siblingDiv)
                 const buttons = siblingDiv.querySelectorAll("button")
-                console.log("🚀 ~ clickApplyButton ~ buttons:", buttons)
                 buttons[1].click()
-                await delay(3000); // Give it 1 second to load
+                await delay(3000);
 
                 let clickedApply = false
                 const allButtons = document.querySelectorAll('button')
                 for (const button of allButtons) {
                     if (button.textContent.trim() === 'Send application') {
-                        console.log("🚀 ~ clickApplyButton ~ Sending application...");
+                        console.log("🚀 ~ clickApplyButton ~ Attempting to click Send application button...");
                         button.click()
                         clickedApply = true
                         break
@@ -86,18 +81,14 @@
             } else {
                 console.log("Sibling div not found.");
             }
-
         }
-
     }
 
     const applyForJob = async () => {
         await delay(1000)
         const modal = document.querySelector('.ReactModal__Content ')
-        await delay(1000)
         const links = modal.querySelectorAll('a')
         const jobLinks = Array.from(links).filter(link => link.hasAttribute('href') && link.getAttribute("href").startsWith("/jobs"))
-        // debugger
         await clickOnJobLink(jobLinks)
     }
 
