@@ -85,11 +85,22 @@
     }
 
     const applyForJob = async () => {
-        await delay(1000)
-        const modal = document.querySelector('.ReactModal__Content ')
-        const links = modal.querySelectorAll('a')
-        const jobLinks = Array.from(links).filter(link => link.hasAttribute('href') && link.getAttribute("href").startsWith("/jobs"))
-        await clickOnJobLink(jobLinks)
+        let attempts = 0
+        let jobLinks = []
+        while (jobLinks.length === 0 && attempts < 3) {
+            await delay(1000)
+            const modal = document.querySelector('.ReactModal__Content ')
+            const links = modal ? modal.querySelectorAll('a') : []
+            jobLinks = Array.from(links).filter(link => link.hasAttribute('href') && link.getAttribute("href").startsWith("/jobs"))
+            attempts++
+        }
+
+        if (jobLinks.length > 0) {
+            await clickOnJobLink(jobLinks)
+        }
+        else {
+            console.log("🚀 ~ applyForJob ~ No job links found after 3 attempts, moving to the next job...");
+        }
     }
 
     start()
