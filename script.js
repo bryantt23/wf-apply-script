@@ -63,20 +63,24 @@
             if (siblingDiv) {
                 const buttons = siblingDiv.querySelectorAll("button")
                 buttons[1].click()
-                await delay(3000);
 
                 let clickedApply = false
-                const allButtons = document.querySelectorAll('button')
-                for (const button of allButtons) {
-                    if (button.textContent.trim() === 'Send application') {
-                        console.log("🚀 ~ clickApplyButton ~ Attempting to click Send application button...");
-                        button.click()
-                        clickedApply = true
-                        break
+                let attempts = 0
+                while (!clickedApply && attempts < 3) {
+                    const allButtons = document.querySelectorAll('button')
+                    for (const button of allButtons) {
+                        if (button.textContent.trim() === 'Send application') {
+                            console.log("🚀 ~ clickApplyButton ~ Attempting to click Send application button...");
+                            button.click()
+                            clickedApply = true
+                            break
+                        }
                     }
-                }
-                if (!clickedApply) {
-                    console.log("🚀 ~ clickApplyButton ~ Could not apply...");
+                    if (!clickedApply) {
+                        console.log(`🚀 ~ clickApplyButton ~ Could not apply... Retry attempt ${attempts + 1}`);
+                        attempts++
+                        await delay(1000)
+                    }
                 }
             } else {
                 console.log("Sibling div not found.");
