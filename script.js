@@ -1,4 +1,5 @@
 {
+    const COMPANIES_TO_APPLY_TO = 21
     const delay = (time = 500) => {
         return new Promise(resolve => {
             setTimeout(resolve, time)
@@ -17,7 +18,7 @@
 
     const start = async () => {
         const companies = document.querySelectorAll('[data-test="StartupResult"]');
-        for (let i = 0; i < 21; i++) {
+        for (let i = 0; i < COMPANIES_TO_APPLY_TO; i++) {
             await showCompanyJobs(companies[i])
         }
     }
@@ -38,14 +39,13 @@
             const frontEndLinks = jobLinks.filter(link => link.hasAttribute('href') && link.getAttribute("href").includes("front"))
             const fullStackLinks = jobLinks.filter(link => link.hasAttribute('href') && link.getAttribute("href").includes("full"))
             const softwareLinks = jobLinks.filter(link => link.hasAttribute('href') && link.getAttribute("href").includes("software"))
-
             if (frontEndLinks.length > 0) {
                 await clickApplyButton(frontEndLinks[0])
             }
             else if (fullStackLinks.length > 0) {
                 await clickApplyButton(fullStackLinks[0])
             }
-            else if (softwareLinks) {
+            else if (softwareLinks.length > 0) {
                 await clickApplyButton(softwareLinks[0])
             }
             else {
@@ -94,6 +94,7 @@
             jobLinks = Array.from(links).filter(link => link.hasAttribute('href') && link.getAttribute("href").startsWith("/jobs"))
             attempts++
         }
+        console.log("🚀 ~ applyForJob ~ jobLinks:", jobLinks)
 
         if (jobLinks.length > 0) {
             await clickOnJobLink(jobLinks)
