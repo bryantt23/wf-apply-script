@@ -1,7 +1,8 @@
 {
     const COMPANIES_TO_APPLY_TO = 21
-    const STARTING_INDEX = 0
+    let visitedCompanies = 0
 
+    // Helper functions
     const delay = (time = 500) => {
         return new Promise(resolve => {
             setTimeout(resolve, time)
@@ -36,11 +37,48 @@
         }
     }
 
+    // Function to check if an element is in the viewport
+    const isInViewport = (element) => {
+        const rect = element.getBoundingClientRect()
+        return (
+            rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        )
+    }
+
+    const paintItGreen = async (element) => {
+        element.style.border = '5px solid green';
+        await delay(2000)
+    }
+
+    // Main functions
     const start = async () => {
-        const companies = document.querySelectorAll('[data-test="StartupResult"]');
-        for (let i = STARTING_INDEX; i < COMPANIES_TO_APPLY_TO; i++) {
-            console.log(`Visiting company #${i + 1}`)
-            await showCompanyJobs(companies[i])
+        let companies = document.querySelectorAll('[data-test="StartupResult"]');
+        let curIndex
+
+        // Find first visible company
+        for (let i = 0; i < companies.length; i++) {
+            if (isInViewport(companies[i])) {
+                curIndex = i
+                break;
+            }
+        }
+
+        curIndex++
+        while (visitedCompanies < COMPANIES_TO_APPLY_TO) {
+            const currentCompany = companies[curIndex]
+            currentCompany.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            await paintItGreen(currentCompany)
+            await showCompanyJobs(currentCompany)
+            visitedCompanies++
+            console.log(`Visited company #${visitedCompanies}`)
+            curIndex++
+            if (curIndex === companies.length && visitedCompanies < COMPANIES_TO_APPLY_TO) {
+                companies = document.querySelectorAll('[data-test="StartupResult"]');
+                curIndex = Array.from(companies).indexOf(currentCompany) + 1
+            }
         }
     }
 
@@ -49,6 +87,14 @@
         links[0].click()
         await delay(1000); // Give it 1 second to load the job details
         await exponentialBackoffRetry(applyForJob)
+        const allButtons = document.querySelectorAll('button')
+        for (const button of allButtons) {
+            if (button.textContent.trim() === 'Cancel') {
+                console.log("🚀 ~ clickApplyButton ~ Attempting to click cancel button for smooth exit...");
+                button.click()
+                break
+            }
+        }
         await closeCompany()
     }
 
@@ -62,7 +108,6 @@
             jobLinks = Array.from(links).filter(link => link.hasAttribute('href') && link.getAttribute("href").startsWith("/jobs"))
             attempts++
         }
-        console.log("🚀 ~ applyForJob ~ jobLinks:", jobLinks)
 
         if (jobLinks.length > 0) {
             await clickOnJobLink(jobLinks)
